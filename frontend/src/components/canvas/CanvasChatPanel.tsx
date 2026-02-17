@@ -31,7 +31,7 @@ export function CanvasChatPanel({ selectedEra }: CanvasChatPanelProps) {
 
   // When selected era changes, find or create a session for it
   useEffect(() => {
-    if (!selectedEra) return;
+    if (!selectedEra || isLoadingSessions) return;
 
     const eraId = String(selectedEra.id);
     const existingSession = sessions.find((s) => s.eraId === eraId);
@@ -41,7 +41,7 @@ export function CanvasChatPanel({ selectedEra }: CanvasChatPanelProps) {
         setActiveSession(existingSession.id);
       }
     }
-  }, [selectedEra, sessions, activeSessionId, setActiveSession]);
+  }, [selectedEra, sessions, activeSessionId, setActiveSession, isLoadingSessions]);
 
   const handleStartChat = async () => {
     if (!selectedEra) return;
@@ -99,6 +99,11 @@ export function CanvasChatPanel({ selectedEra }: CanvasChatPanelProps) {
         </div>
 
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          {error && (
+            <div className="mb-4 w-full max-w-xs rounded-lg bg-[hsl(var(--destructive))] px-4 py-2 text-sm text-[hsl(var(--destructive-foreground))]">
+              {error}
+            </div>
+          )}
           <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">
             Start a conversation about {selectedEra.name}
           </p>

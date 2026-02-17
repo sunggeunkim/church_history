@@ -8,7 +8,6 @@ type CanvasTimelineProps = {
   selectedEraId: number | null;
   onToggleExpand: (eraId: number) => void;
   onChatClick: (era: Era) => void;
-  scrollToEraId?: number | null;
 };
 
 export function CanvasTimeline({

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, MessageSquare } from "lucide-react";
 import type { Era } from "@/types";
@@ -14,7 +14,7 @@ type CanvasEraBlockProps = {
   onChatClick: () => void;
 };
 
-export function CanvasEraBlock({
+export const CanvasEraBlock = memo(function CanvasEraBlock({
   era,
   isExpanded,
   isSelected,
@@ -126,4 +126,4 @@ export function CanvasEraBlock({
       </AnimatePresence>
     </motion.div>
   );
-}
+});

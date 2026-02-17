@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import type { Era } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -20,16 +20,30 @@ export function CanvasOverviewBar({
 
   const eraProportions = useMemo(() => {
     const currentYear = new Date().getFullYear();
-    const durations = sortedEras.map(
-      (era) => (era.endYear ?? currentYear) - era.startYear,
+    const durations = sortedEras.map((era) =>
+      Math.max((era.endYear ?? currentYear) - era.startYear, 1),
     );
     const total = durations.reduce((sum, d) => sum + d, 0);
+    if (total === 0) return durations.map(() => 100 / durations.length);
     return durations.map((d) => (d / total) * 100);
   }, [sortedEras]);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent, index: number) => {
+      if (e.key === "ArrowLeft" && index > 0) {
+        e.preventDefault();
+        onEraClick(sortedEras[index - 1]);
+      } else if (e.key === "ArrowRight" && index < sortedEras.length - 1) {
+        e.preventDefault();
+        onEraClick(sortedEras[index + 1]);
+      }
+    },
+    [onEraClick, sortedEras],
+  );
+
   return (
     <div className="sticky top-0 z-10 border-b border-[hsl(var(--border))] bg-[hsl(var(--background))] px-4 py-3">
-      <div className="flex h-8 overflow-hidden rounded-lg">
+      <div className="flex h-8 overflow-hidden rounded-lg" role="tablist">
         {sortedEras.map((era, index) => (
           <button
             key={era.id}
@@ -44,6 +58,8 @@ export function CanvasOverviewBar({
                 "brightness-110 ring-2 ring-inset ring-white/70",
             )}
             onClick={() => onEraClick(era)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            tabIndex={selectedEraId === era.id ? 0 : -1}
             aria-label={`Navigate to ${era.name}`}
             role="tab"
             aria-selected={selectedEraId === era.id}
