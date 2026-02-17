@@ -33,6 +33,7 @@ tiktoken==0.8.0  # MIT
 
 # LLM API
 anthropic>=0.40.0  # MIT - Claude API client
+openai>=1.0.0  # MIT - OpenAI API client (quiz generation)
 
 # ASGI server for streaming
 uvicorn[standard]>=0.32.0  # BSD-3-Clause
