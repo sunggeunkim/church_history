@@ -4,7 +4,7 @@ import secrets
 import string
 
 from django.conf import settings
-from django.db import models
+from django.db import IntegrityError, models
 
 
 def generate_share_token(length=8):
@@ -45,13 +45,18 @@ class ShareLink(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.token:
-            for _ in range(5):
-                token = generate_share_token()
-                if not ShareLink.objects.filter(token=token).exists():
-                    self.token = token
-                    break
-            else:
-                raise RuntimeError("Failed to generate unique share token")
+            for attempt in range(5):
+                self.token = generate_share_token()
+                try:
+                    super().save(*args, **kwargs)
+                    return
+                except IntegrityError:
+                    self.token = ""
+                    if attempt == 4:
+                        raise RuntimeError(
+                            "Failed to generate unique share token after 5 attempts"
+                        )
+                    continue
         super().save(*args, **kwargs)
 
     @property

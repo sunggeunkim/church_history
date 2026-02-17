@@ -47,7 +47,7 @@ def _build_achievement_snapshot(user, achievement_id):
         "achievement_description": achievement.description,
         "achievement_category": achievement.category,
         "achievement_icon_key": achievement.icon_key,
-        "unlocked_at": user_achievement.unlocked_at.isoformat(),
+        "unlocked_at": user_achievement.unlocked_at.strftime("%B %-d, %Y"),
     }
 
 

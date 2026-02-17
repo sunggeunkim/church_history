@@ -44,7 +44,7 @@ class CreateShareLinkView(GenericAPIView):
             user=request.user,
             share_type=share_type,
             content_snapshot=content_snapshot,
-            sharer_display_name=request.user.display_name or request.user.email,
+            sharer_display_name=request.user.display_name or "A Toledot Learner",
         )
 
         return Response(
@@ -69,7 +69,7 @@ class ListShareLinksView(GenericAPIView):
         ).order_by("-created_at")
 
         serializer = self.get_serializer(links, many=True)
-        return Response({"count": links.count(), "results": serializer.data})
+        return Response({"count": len(serializer.data), "results": serializer.data})
 
 
 class DeleteShareLinkView(GenericAPIView):
