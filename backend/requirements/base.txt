@@ -20,3 +20,13 @@ redis==5.2.1  # BSD-3-Clause Python client; server uses Valkey (BSD-3-Clause)
 
 # Production server
 gunicorn==23.0.0
+
+# Content scraping
+youtube-transcript-api==0.6.3  # MIT
+beautifulsoup4==4.12.3  # MIT
+trafilatura==1.12.2  # Apache-2.0
+lxml==5.3.0  # BSD
+
+# Text processing & embeddings
+sentence-transformers==3.3.1  # Apache-2.0
+tiktoken==0.8.0  # MIT
