@@ -229,6 +229,10 @@ CSRF_TRUSTED_ORIGINS = config(
 ANTHROPIC_API_KEY = config("ANTHROPIC_API_KEY", default="")
 ANTHROPIC_MODEL = config("ANTHROPIC_MODEL", default="claude-haiku-4-5-20251001")
 
+# OpenAI API (Quiz Generation)
+OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
+OPENAI_MODEL = config("OPENAI_MODEL", default="gpt-4o")
+
 # Celery - uses Valkey (BSD-3-Clause, drop-in Redis replacement)
 # Connection URLs use redis:// protocol (Valkey is wire-compatible)
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://localhost:6379/0")

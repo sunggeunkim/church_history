@@ -58,12 +58,66 @@ export type SourceCitation = {
   source: string;
 };
 
-export type QuizQuestion = {
-  id: string;
-  question: string;
+export type Quiz = {
+  id: number;
+  era: number | null;
+  eraName: string | null;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  score: number;
+  totalQuestions: number;
+  percentageScore: number;
+  passed: boolean;
+  completedAt: string | null;
+  createdAt: string;
+  questions: QuizQuestionItem[];
+};
+
+export type QuizQuestionItem = {
+  id: number;
+  questionText: string;
+  questionType: "mc" | "tf" | "sa";
   options: string[];
-  correctIndex: number;
+  userAnswer: string | null;
+  correctAnswer: string | null;
+  isCorrect: boolean | null;
   explanation: string;
+  feedback: string | null;
+  order: number;
+};
+
+export type QuizFeedback = {
+  questionId: number;
+  isCorrect: boolean;
+  correctAnswer: string;
+  explanation: string;
+  feedback: string | null;
+};
+
+export type QuizHistoryItem = {
+  id: number;
+  era: number | null;
+  eraName: string | null;
+  difficulty: string;
+  score: number;
+  totalQuestions: number;
+  percentageScore: number;
+  passed: boolean;
+  completedAt: string;
+  createdAt: string;
+};
+
+export type QuizStats = {
+  totalQuizzes: number;
+  totalCompleted: number;
+  averageScore: number;
+  quizzesPassed: number;
+  currentStreak: number;
+  byEra: {
+    eraId: number;
+    eraName: string;
+    quizzesCompleted: number;
+    averageScore: number;
+  }[];
 };
 
 export type ProgressSummary = {
