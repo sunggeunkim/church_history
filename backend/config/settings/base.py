@@ -145,6 +145,10 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
+    "DEFAULT_THROTTLE_RATES": {
+        "chat": "30/hour",
+        "chat_burst": "5/minute",
+    },
 }
 
 # Simple JWT
@@ -220,6 +224,10 @@ CSRF_TRUSTED_ORIGINS = config(
     default="http://localhost:5173,http://localhost:3000",
     cast=Csv(),
 )
+
+# Anthropic API (Claude)
+ANTHROPIC_API_KEY = config("ANTHROPIC_API_KEY", default="")
+ANTHROPIC_MODEL = config("ANTHROPIC_MODEL", default="claude-haiku-4-5-20251001")
 
 # Celery - uses Valkey (BSD-3-Clause, drop-in Redis replacement)
 # Connection URLs use redis:// protocol (Valkey is wire-compatible)
