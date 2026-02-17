@@ -121,9 +121,61 @@ export type QuizStats = {
 };
 
 export type ProgressSummary = {
-  totalEras: number;
-  completedEras: number;
+  overall: {
+    completionPercentage: number;
+    erasVisited: number;
+    erasChatted: number;
+    erasQuizzed: number;
+    totalEras: number;
+  };
+  stats: {
+    totalQuizzes: number;
+    quizzesPassed: number;
+    averageScore: number;
+    currentStreak: number;
+    totalChatSessions: number;
+    accountAgeDays: number;
+  };
+  byEra: EraProgress[];
+  recentActivity: ActivityItem[];
+};
+
+export type EraProgress = {
+  eraId: number;
+  eraName: string;
+  eraSlug: string;
+  eraColor: string;
+  eraVisited: boolean;
+  firstVisitedAt: string | null;
+  chatSessionsCount: number;
+  lastChatAt: string | null;
+  quizzesCompleted: number;
   quizzesPassed: number;
-  currentStreak: number;
-  overallPercent: number;
+  bestQuizScore: number | null;
+  lastQuizAt: string | null;
+  completionPercentage: number;
+};
+
+export type ActivityItem = {
+  type: "visit" | "chat" | "quiz";
+  eraName: string;
+  description: string;
+  timestamp: string;
+};
+
+export type Achievement = {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  category: string;
+  iconKey: string;
+  unlocked: boolean;
+  unlockedAt: string | null;
+};
+
+export type AchievementList = {
+  achievements: Achievement[];
+  totalUnlocked: number;
+  totalAchievements: number;
 };

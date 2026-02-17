@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Loader2, MessageSquare, X } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { useEraStore } from "@/stores/eraStore";
+import { useProgressStore } from "@/stores/progressStore";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { CanvasOverviewBar } from "@/components/canvas/CanvasOverviewBar";
 import { CanvasTimeline } from "@/components/canvas/CanvasTimeline";
@@ -20,6 +21,7 @@ export function CanvasPage() {
     setExpandedEra,
   } = useEraStore();
 
+  const { markEraVisited } = useProgressStore();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [selectedEra, setSelectedEra] = useState<Era | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
@@ -46,6 +48,8 @@ export function CanvasPage() {
   const handleEraOverviewClick = (era: Era) => {
     setExpandedEra(era.id);
     setSelectedEra(era);
+    // Mark era as visited
+    markEraVisited(era.id);
     // Scroll to the era block
     const element = document.getElementById(`era-block-${era.id}`);
     element?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -108,7 +112,11 @@ export function CanvasPage() {
             onToggleExpand={(eraId) => {
               toggleExpanded(eraId);
               const era = eras.find((e) => e.id === eraId);
-              if (era) setSelectedEra(era);
+              if (era) {
+                setSelectedEra(era);
+                // Mark era as visited when expanded
+                markEraVisited(era.id);
+              }
             }}
             onChatClick={handleChatClick}
           />
