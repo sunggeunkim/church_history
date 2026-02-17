@@ -7,13 +7,13 @@ All dependencies must be **open source with commercially permissive licenses** (
 ### Backend (Django)
 | Component | Technology | License |
 |---|---|---|
-| Framework | Django 5.x | BSD-3-Clause |
+| Framework | Django 5.2 LTS | BSD-3-Clause |
 | REST API | Django REST Framework | BSD-3-Clause |
 | Auth | django-allauth (Google OAuth) | MIT |
 | JWT | djangorestframework-simplejwt | MIT |
 | Database | PostgreSQL 16 | PostgreSQL License |
 | Vector DB | pgvector extension | PostgreSQL License |
-| Task Queue | Celery + Redis | BSD-3-Clause / BSD-3-Clause |
+| Task Queue | Celery + Valkey (Redis fork) | BSD-3-Clause / BSD-3-Clause |
 | Web Scraping | yt-dlp (transcripts), beautifulsoup4, requests | Unlicense / MIT / Apache-2.0 |
 | Embeddings | sentence-transformers (Apache-2.0) or OpenAI API |  Apache-2.0 |
 | LLM Integration | litellm or direct API calls | MIT |
@@ -34,7 +34,7 @@ All dependencies must be **open source with commercially permissive licenses** (
 | UI Components | Shadcn/ui (Radix primitives) | MIT |
 | Styling | Tailwind CSS | MIT |
 | Chat UI | Custom components | N/A |
-| Canvas | Fabric.js or Konva.js | MIT |
+| Canvas | Konva.js | MIT |
 | Testing | Vitest + React Testing Library | MIT |
 | Linting | ESLint + Prettier | MIT |
 
@@ -88,7 +88,7 @@ All dependencies must be **open source with commercially permissive licenses** (
            │
            ▼
 ┌─────────────────────┐
-│       Redis          │
+│    Valkey (Redis)    │
 │   - Celery broker    │
 │   - Cache            │
 │   - Session store    │

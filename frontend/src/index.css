@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/*
+ * Toledot Design System - Tailwind CSS v4 Theme Configuration
+ * See: docs/features/p0-design.md for full specification
+ */
+
+@theme {
+  /* Primary - Deep Navy */
+  --color-primary-50: #eef2f7;
+  --color-primary-100: #d4dee9;
+  --color-primary-200: #a9bdd4;
+  --color-primary-300: #93b4d4;
+  --color-primary-400: #5e89b4;
+  --color-primary-500: #345f8a;
+  --color-primary-600: #274a6e;
+  --color-primary-700: #1e3a5f;
+  --color-primary-800: #152c48;
+  --color-primary-900: #0d1d31;
+  --color-primary-950: #071019;
+
+  /* Secondary - Warm Stone */
+  --color-secondary-50: #faf9f6;
+  --color-secondary-100: #f1ede7;
+  --color-secondary-200: #e2dcd3;
+  --color-secondary-300: #c8bfb3;
+  --color-secondary-400: #a39889;
+  --color-secondary-500: #7d7265;
+
+  /* Accent - Amber/Gold */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+
+  /* Era Colors */
+  --color-era-early: #c2410c;
+  --color-era-nicene: #b45309;
+  --color-era-medieval: #7c3aed;
+  --color-era-reformation: #15803d;
+  --color-era-modern: #2563eb;
+  --color-era-contemporary: #475569;
+
+  /* Font Families */
+  --font-heading: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+
+  /* Custom animations */
+  --animate-slide-in-right: slide-in-right 300ms ease-in-out;
+  --animate-slide-out-right: slide-out-right 300ms ease-in-out;
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-scale-in: scale-in 200ms ease-out;
+}
+
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-right {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* CSS custom properties for shadcn/ui compatibility */
+:root {
+  --background: 40 10% 98%;
+  --foreground: 20 14% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14% 10%;
+  --primary: 211 53% 24%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 30 22% 93%;
+  --secondary-foreground: 20 8% 46%;
+  --accent: 32 95% 37%;
+  --accent-foreground: 48 100% 96%;
+  --muted: 20 6% 96%;
+  --muted-foreground: 20 5% 46%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 20 6% 90%;
+  --input: 20 6% 90%;
+  --ring: 211 53% 24%;
+  --radius: 0.5rem;
+  --success: 142 71% 37%;
+  --success-foreground: 0 0% 100%;
+}
+
+.dark {
+  --background: 20 14% 4%;
+  --foreground: 20 5% 98%;
+  --card: 20 14% 10%;
+  --card-foreground: 20 5% 98%;
+  --popover: 20 14% 10%;
+  --popover-foreground: 20 5% 98%;
+  --primary: 208 42% 70%;
+  --primary-foreground: 20 14% 4%;
+  --secondary: 20 8% 15%;
+  --secondary-foreground: 20 6% 82%;
+  --accent: 45 93% 52%;
+  --accent-foreground: 20 14% 4%;
+  --muted: 20 8% 15%;
+  --muted-foreground: 20 5% 64%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 20 8% 27%;
+  --input: 20 8% 27%;
+  --ring: 208 42% 70%;
+  --success: 142 71% 45%;
+  --success-foreground: 20 14% 4%;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,
+  h2 {
+    font-family: var(--font-heading);
+  }
+}
