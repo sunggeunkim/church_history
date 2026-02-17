@@ -7,6 +7,7 @@ import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import { ChatPage } from "@/pages/ChatPage";
 import { ErasPage } from "@/pages/ErasPage";
+import { EraDetailPage } from "@/pages/EraDetailPage";
 import { QuizPage } from "@/pages/QuizPage";
 import { ProgressPage } from "@/pages/ProgressPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
@@ -25,6 +26,7 @@ function App() {
                 <Route index element={<HomePage />} />
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="eras" element={<ErasPage />} />
+                <Route path="eras/:slug" element={<EraDetailPage />} />
                 <Route path="quiz" element={<QuizPage />} />
                 <Route path="progress" element={<ProgressPage />} />
                 <Route path="*" element={<NotFoundPage />} />
