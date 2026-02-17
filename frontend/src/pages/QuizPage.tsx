@@ -110,6 +110,7 @@ export function QuizPage() {
           score={activeQuiz.score}
           totalQuestions={activeQuiz.totalQuestions}
           passed={activeQuiz.passed}
+          quizId={activeQuiz.id}
           onReview={handleReviewQuiz}
           onNewQuiz={handleNewQuiz}
         />

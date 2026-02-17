@@ -2,6 +2,7 @@ import * as Icons from "lucide-react";
 import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Achievement } from "@/types";
+import { ShareButton } from "@/components/sharing/ShareButton";
 
 type AchievementBadgeProps = {
   achievement: Achievement;
@@ -95,6 +96,18 @@ export function AchievementBadge({ achievement }: AchievementBadgeProps) {
         <p className="mt-2 text-center text-xs text-[hsl(var(--muted-foreground))]">
           Unlocked: {new Date(achievement.unlockedAt).toLocaleDateString()}
         </p>
+      )}
+
+      {/* Share button for unlocked achievements */}
+      {achievement.unlocked && (
+        <div className="mt-2 flex justify-center">
+          <ShareButton
+            shareType="achievement"
+            achievementId={achievement.id}
+            variant="icon"
+            label="Share achievement"
+          />
+        </div>
       )}
     </div>
   );

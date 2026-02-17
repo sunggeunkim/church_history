@@ -12,6 +12,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from apps.accounts.views import CSRFTokenView, GoogleLoginView
+from apps.sharing.views import public_share_page
 
 
 @api_view(["GET"])
@@ -22,6 +23,7 @@ def health_check(request):
 
 
 urlpatterns = [
+    path("share/<str:token>/", public_share_page, name="public-share"),
     path("admin/", admin.site.urls),
     path("api/health/", health_check, name="health-check"),
     path("api/accounts/", include("apps.accounts.urls")),

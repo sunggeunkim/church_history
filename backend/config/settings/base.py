@@ -150,6 +150,8 @@ REST_FRAMEWORK = {
         "chat_burst": "5/minute",
         "quiz": "20/hour",
         "quiz_burst": "3/minute",
+        "sharing": "30/hour",
+        "sharing_burst": "5/minute",
     },
 }
 
@@ -245,6 +247,12 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
+
+# Social sharing
+SHARE_BASE_URL = config("SHARE_BASE_URL", default="http://localhost:8000")
+
+# Frontend URL (for CTA links on public share pages)
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
 
 # Allowed hosts - overridden per environment
 ALLOWED_HOSTS = config(

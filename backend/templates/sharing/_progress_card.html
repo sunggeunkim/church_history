@@ -1,0 +1,51 @@
+{% with snapshot=share_link.content_snapshot %}
+<div class="text-center">
+    <p class="text-sm font-medium text-amber-700 dark:text-amber-400 uppercase tracking-wide mb-1">
+        Learning Journey
+    </p>
+
+    <!-- Overall completion -->
+    <div class="mx-auto w-32 h-32 rounded-full border-8 border-amber-500 flex items-center justify-center mb-4">
+        <div>
+            <div class="text-3xl font-bold text-amber-700 dark:text-amber-400">
+                {{ snapshot.completion_percentage }}%
+            </div>
+            <div class="text-xs text-stone-500 dark:text-stone-400">Complete</div>
+        </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="grid grid-cols-2 gap-4 mt-4 text-center">
+        <div>
+            <div class="text-2xl font-bold text-stone-900 dark:text-stone-100">
+                {{ snapshot.eras_visited }}/{{ snapshot.total_eras }}
+            </div>
+            <div class="text-xs text-stone-500 dark:text-stone-400">Eras Explored</div>
+        </div>
+        <div>
+            <div class="text-2xl font-bold text-stone-900 dark:text-stone-100">
+                {{ snapshot.quizzes_passed }}
+            </div>
+            <div class="text-xs text-stone-500 dark:text-stone-400">Quizzes Passed</div>
+        </div>
+        <div>
+            <div class="text-2xl font-bold text-stone-900 dark:text-stone-100">
+                {{ snapshot.average_score }}%
+            </div>
+            <div class="text-xs text-stone-500 dark:text-stone-400">Avg Score</div>
+        </div>
+        <div>
+            <div class="text-2xl font-bold text-stone-900 dark:text-stone-100">
+                {{ snapshot.achievements_unlocked }}/{{ snapshot.total_achievements }}
+            </div>
+            <div class="text-xs text-stone-500 dark:text-stone-400">Achievements</div>
+        </div>
+    </div>
+
+    {% if snapshot.current_streak > 0 %}
+    <div class="mt-4 inline-flex items-center gap-1 rounded-full bg-orange-100 dark:bg-orange-900 px-3 py-1 text-sm font-semibold text-orange-800 dark:text-orange-200">
+        &#x1F525; {{ snapshot.current_streak }}-day streak
+    </div>
+    {% endif %}
+</div>
+{% endwith %}
