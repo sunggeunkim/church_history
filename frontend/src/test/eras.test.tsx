@@ -11,6 +11,15 @@ import type { Era } from "@/types";
 // Mock the era store
 vi.mock("@/stores/eraStore");
 
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 const mockEras: Era[] = [
   {
     id: 1,
@@ -73,6 +82,12 @@ describe("ErasPage", () => {
       fetchEras: mockFetchEras,
       fetchEra: vi.fn(),
       selectEra: mockSelectEra,
+      timelineData: null,
+      expandedEraId: null,
+      isLoadingTimeline: false,
+      fetchTimeline: vi.fn(),
+      toggleExpanded: vi.fn(),
+      setExpandedEra: vi.fn(),
     });
 
     render(
@@ -82,8 +97,10 @@ describe("ErasPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Early Church")).toBeInTheDocument();
-      expect(screen.getByText("Nicene & Post-Nicene")).toBeInTheDocument();
+      expect(screen.getAllByText("Early Church").length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText("Nicene & Post-Nicene").length,
+      ).toBeGreaterThan(0);
     });
 
     expect(mockFetchEras).toHaveBeenCalledOnce();
@@ -98,6 +115,12 @@ describe("ErasPage", () => {
       fetchEras: vi.fn(),
       fetchEra: vi.fn(),
       selectEra: vi.fn(),
+      timelineData: null,
+      expandedEraId: null,
+      isLoadingTimeline: false,
+      fetchTimeline: vi.fn(),
+      toggleExpanded: vi.fn(),
+      setExpandedEra: vi.fn(),
     });
 
     render(
@@ -118,6 +141,12 @@ describe("ErasPage", () => {
       fetchEras: vi.fn(),
       fetchEra: vi.fn(),
       selectEra: vi.fn(),
+      timelineData: null,
+      expandedEraId: null,
+      isLoadingTimeline: false,
+      fetchTimeline: vi.fn(),
+      toggleExpanded: vi.fn(),
+      setExpandedEra: vi.fn(),
     });
 
     render(
@@ -138,6 +167,12 @@ describe("ErasPage", () => {
       fetchEras: vi.fn(),
       fetchEra: vi.fn(),
       selectEra: vi.fn(),
+      timelineData: null,
+      expandedEraId: null,
+      isLoadingTimeline: false,
+      fetchTimeline: vi.fn(),
+      toggleExpanded: vi.fn(),
+      setExpandedEra: vi.fn(),
     });
 
     render(
@@ -193,15 +228,6 @@ describe("Timeline", () => {
 
 describe("EraCard", () => {
   it("renders era information", () => {
-    const mockNavigate = vi.fn();
-    vi.mock("react-router-dom", async () => {
-      const actual = await vi.importActual("react-router-dom");
-      return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-      };
-    });
-
     render(
       <BrowserRouter>
         <EraCard era={mockEras[0]} />

@@ -10,6 +10,7 @@ import { ErasPage } from "@/pages/ErasPage";
 import { EraDetailPage } from "@/pages/EraDetailPage";
 import { QuizPage } from "@/pages/QuizPage";
 import { ProgressPage } from "@/pages/ProgressPage";
+import { CanvasPage } from "@/pages/CanvasPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
@@ -27,6 +28,7 @@ function App() {
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="eras" element={<ErasPage />} />
                 <Route path="eras/:slug" element={<EraDetailPage />} />
+                <Route path="canvas" element={<CanvasPage />} />
                 <Route path="quiz" element={<QuizPage />} />
                 <Route path="progress" element={<ProgressPage />} />
                 <Route path="*" element={<NotFoundPage />} />
