@@ -2,6 +2,7 @@
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .models import Era
@@ -15,9 +16,12 @@ class EraViewSet(viewsets.ReadOnlyModelViewSet):
     - list: All eras with basic info for timeline
     - retrieve: Single era with key events and figures
     - timeline: Custom endpoint for timeline visualization
+
+    Eras are public reference data accessible without authentication.
     """
 
     queryset = Era.objects.all().prefetch_related("key_events", "key_figures")
+    permission_classes = [AllowAny]
     lookup_field = "slug"
 
     def get_serializer_class(self):
