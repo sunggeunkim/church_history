@@ -179,3 +179,23 @@ export type AchievementList = {
   totalUnlocked: number;
   totalAchievements: number;
 };
+
+// Social Sharing types
+export type ShareLink = {
+  token: string;
+  shareType: "achievement" | "quiz_result" | "progress";
+  shareUrl: string;
+  contentSnapshot: Record<string, unknown>;
+  sharerDisplayName: string;
+  viewCount: number;
+  isActive: boolean;
+  createdAt: string;
+};
+
+export type CreateShareLinkResponse = {
+  token: string;
+  share_type: string;
+  share_url: string;
+  content_snapshot: Record<string, unknown>;
+  created_at: string;
+};

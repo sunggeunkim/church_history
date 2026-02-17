@@ -6,6 +6,7 @@ import { StatsOverview } from "@/components/progress/StatsOverview";
 import { EraProgressGrid } from "@/components/progress/EraProgressGrid";
 import { AchievementSection } from "@/components/progress/AchievementSection";
 import { RecentActivity } from "@/components/progress/RecentActivity";
+import { ShareButton } from "@/components/sharing/ShareButton";
 
 export function ProgressPage() {
   const { summary, achievements, isLoading, isLoadingAchievements, error, loadSummary, loadAchievements } =
@@ -47,9 +48,16 @@ export function ProgressPage() {
       {/* Header with Progress Ring */}
       <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-[hsl(var(--foreground))]">
-            Your Progress
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="font-heading text-3xl font-bold tracking-tight text-[hsl(var(--foreground))]">
+              Your Progress
+            </h1>
+            <ShareButton
+              shareType="progress"
+              variant="button"
+              label="Share Progress"
+            />
+          </div>
           <p className="mt-2 text-[hsl(var(--muted-foreground))]">
             Track your learning journey across all eras
           </p>

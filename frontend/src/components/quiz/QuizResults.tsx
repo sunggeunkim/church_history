@@ -4,16 +4,18 @@ import Confetti from "react-confetti";
 import { Trophy, RotateCcw, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWindowSize } from "@/hooks/useWindowSize";
+import { ShareButton } from "@/components/sharing/ShareButton";
 
 type QuizResultsProps = {
   score: number;
   totalQuestions: number;
   passed: boolean;
+  quizId?: number;
   onReview: () => void;
   onNewQuiz: () => void;
 };
 
-export function QuizResults({ score, totalQuestions, passed, onReview, onNewQuiz }: QuizResultsProps) {
+export function QuizResults({ score, totalQuestions, passed, quizId, onReview, onNewQuiz }: QuizResultsProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const { width, height } = useWindowSize();
   const percentage = Math.round((score / totalQuestions) * 100);
@@ -152,6 +154,18 @@ export function QuizResults({ score, totalQuestions, passed, onReview, onNewQuiz
             New Quiz
           </button>
         </div>
+
+        {/* Share Quiz Result */}
+        {quizId !== undefined && (
+          <div className="mt-4 flex justify-center">
+            <ShareButton
+              shareType="quiz_result"
+              quizId={quizId}
+              variant="button"
+              label="Share Result"
+            />
+          </div>
+        )}
       </motion.div>
     </div>
   );

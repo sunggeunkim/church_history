@@ -12,6 +12,7 @@ import { QuizPage } from "@/pages/QuizPage";
 import { ProgressPage } from "@/pages/ProgressPage";
 import { CanvasPage } from "@/pages/CanvasPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { ShareModal } from "@/components/sharing/ShareModal";
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
@@ -20,6 +21,7 @@ function App() {
     <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
         <BrowserRouter>
+          <ShareModal />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route element={<ProtectedRoute />}>

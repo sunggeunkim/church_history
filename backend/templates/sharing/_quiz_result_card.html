@@ -1,0 +1,33 @@
+{% with snapshot=share_link.content_snapshot %}
+<div class="text-center">
+    <p class="text-sm font-medium text-amber-700 dark:text-amber-400 uppercase tracking-wide mb-1">
+        Quiz Result
+    </p>
+    <h2 class="font-heading text-2xl font-bold text-stone-900 dark:text-stone-100">
+        {{ snapshot.era_name }}
+    </h2>
+    <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">
+        {{ snapshot.difficulty|title }} Difficulty
+    </p>
+
+    <!-- Score circle -->
+    <div class="mx-auto w-32 h-32 rounded-full border-8
+        {% if snapshot.passed %}border-green-500{% else %}border-red-400{% endif %}
+        flex items-center justify-center mb-4">
+        <div>
+            <div class="text-3xl font-bold
+                {% if snapshot.passed %}text-green-600 dark:text-green-400{% else %}text-red-500 dark:text-red-400{% endif %}">
+                {{ snapshot.percentage_score }}%
+            </div>
+            <div class="text-xs text-stone-500 dark:text-stone-400">
+                {{ snapshot.score }}/{{ snapshot.total_questions }}
+            </div>
+        </div>
+    </div>
+
+    <span class="inline-block rounded-full px-3 py-1 text-sm font-semibold
+        {% if snapshot.passed %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% else %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% endif %}">
+        {% if snapshot.passed %}Passed{% else %}Attempted{% endif %}
+    </span>
+</div>
+{% endwith %}
