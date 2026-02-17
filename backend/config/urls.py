@@ -11,6 +11,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from apps.accounts.views import CSRFTokenView, GoogleLoginView
+
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -32,6 +34,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("api/auth/", include("dj_rest_auth.urls")),
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("api/auth/csrf/", CSRFTokenView.as_view(), name="csrf-token"),
+    path("api/auth/google/", GoogleLoginView.as_view(), name="google-login"),
     path(
         "api/auth/token/",
         TokenObtainPairView.as_view(),

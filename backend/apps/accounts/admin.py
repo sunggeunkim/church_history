@@ -6,7 +6,11 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ("email", "username", "is_staff", "is_active", "date_joined")
+    list_display = ("email", "username", "display_name", "is_staff", "is_active", "date_joined")
     list_filter = ("is_staff", "is_active")
-    search_fields = ("email", "username")
+    search_fields = ("email", "username", "display_name")
     ordering = ("-date_joined",)
+
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ("Profile", {"fields": ("display_name", "avatar_url")}),
+    )
