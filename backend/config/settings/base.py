@@ -137,7 +137,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Django REST Framework
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
@@ -157,10 +157,16 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-# dj-rest-auth
+# dj-rest-auth with httpOnly JWT cookies
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": True,
+    "JWT_AUTH_COOKIE": "toledot_access",
+    "JWT_AUTH_REFRESH_COOKIE": "toledot_refresh",
+    "JWT_AUTH_COOKIE_USE_CSRF": True,
+    "JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED": False,
+    "JWT_AUTH_SECURE": config("JWT_AUTH_SECURE", default=False, cast=bool),
+    "JWT_AUTH_SAMESITE": "Lax",
 }
 
 # django-allauth
@@ -192,9 +198,25 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+SOCIALACCOUNT_ADAPTER = "apps.accounts.adapters.CustomSocialAccountAdapter"
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# After Google OAuth login, redirect to frontend
+LOGIN_REDIRECT_URL = config(
+    "LOGIN_REDIRECT_URL", default="http://localhost:5173/auth/callback"
+)
+
 # CORS - overridden per environment
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
+    default="http://localhost:5173,http://localhost:3000",
+    cast=Csv(),
+)
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF trusted origins for SPA (cookie-based JWT requires CSRF protection)
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
     default="http://localhost:5173,http://localhost:3000",
     cast=Csv(),
 )
