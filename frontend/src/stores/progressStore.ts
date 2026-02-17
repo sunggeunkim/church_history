@@ -70,10 +70,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   markEraVisited: async (eraId: number) => {
     try {
       await markEraVisited(eraId);
-      // Reload summary to get updated progress
-      await get().loadSummary();
-      // Check for newly unlocked achievements
-      await get().checkAchievements();
+      // Reload summary and check achievements in parallel
+      await Promise.all([get().loadSummary(), get().checkAchievements()]);
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Failed to mark era as visited",

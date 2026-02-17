@@ -24,8 +24,16 @@ const getCategoryColor = (category: string) => {
   }
 };
 
+function kebabToPascal(str: string) {
+  return str
+    .split("-")
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join("");
+}
+
 export function AchievementBadge({ achievement }: AchievementBadgeProps) {
-  const IconComponent = (Icons as any)[achievement.iconKey] || Icons.Award;
+  const IconComponent =
+    (Icons as any)[kebabToPascal(achievement.iconKey)] || Icons.Award;
 
   return (
     <div

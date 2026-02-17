@@ -46,26 +46,29 @@ class ProgressSummaryView(GenericAPIView):
         eras_chatted = user_progress.filter(chat_sessions_count__gt=0).count()
         eras_quizzed = user_progress.filter(quizzes_passed__gt=0).count()
 
-        # Calculate overall completion
-        total_activities = sum(
-            p.completion_percentage / 100 * 3 for p in user_progress
-        )
+        # Calculate overall completion from raw activity counts (DB-level)
+        total_activities = eras_visited + eras_chatted + eras_quizzed
         max_activities = total_eras * 3
         completion_percentage = (
             round((total_activities / max_activities) * 100) if max_activities > 0 else 0
         )
 
-        # Quiz stats
+        # Quiz stats (all DB-level, no Python iteration)
         completed_quizzes = Quiz.objects.filter(
             user=user, completed_at__isnull=False
         )
         total_quizzes = completed_quizzes.count()
-        quizzes_passed = sum(1 for q in completed_quizzes if q.passed)
+        quizzes_passed = completed_quizzes.filter(
+            total_questions__gt=0,
+        ).annotate(
+            pct=Cast(F("score"), FloatField()) * 100.0
+            / Cast(F("total_questions"), FloatField()),
+        ).filter(pct__gte=70).count()
 
         avg_score = 0.0
         if total_quizzes > 0:
             avg_score = (
-                completed_quizzes.aggregate(
+                completed_quizzes.filter(total_questions__gt=0).aggregate(
                     avg=Avg(
                         Cast(F("score"), FloatField())
                         * 100.0

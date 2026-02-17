@@ -408,25 +408,33 @@ class TestQuizProgressSignal:
 class TestActivityStreak:
     """Tests for activity streak calculation."""
 
-    def test_streak_with_consecutive_days(self, user, era):
+    def test_streak_with_consecutive_days(self, user):
         """Test streak calculation with consecutive days of activity."""
         today = timezone.now().date()
 
-        # Create activity for last 3 days
+        # Create 3 separate eras for 3 days of activity
         for i in range(3):
             date = today - timedelta(days=i)
-            progress = UserProgress.objects.create(
+            era = Era.objects.create(
+                name=f"Streak Era {i}",
+                slug=f"streak-era-{i}",
+                start_year=100 + i * 100,
+                end_year=200 + i * 100,
+                description="Test",
+                color="#000000",
+                order=10 + i,
+            )
+            UserProgress.objects.create(
                 user=user,
                 era=era,
                 era_visited=True,
+                first_visited_at=timezone.datetime.combine(
+                    date, timezone.datetime.min.time()
+                ).replace(tzinfo=timezone.get_current_timezone()),
             )
-            progress.first_visited_at = timezone.datetime.combine(
-                date, timezone.datetime.min.time()
-            ).replace(tzinfo=timezone.get_current_timezone())
-            progress.save()
 
         streak = calculate_activity_streak(user)
-        assert streak >= 1  # At least today
+        assert streak == 3
 
     def test_streak_with_gap(self, user, era):
         """Test that streak breaks with a gap."""

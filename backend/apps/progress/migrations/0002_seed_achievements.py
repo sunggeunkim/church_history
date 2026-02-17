@@ -132,5 +132,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_achievements),
+        migrations.RunPython(create_achievements, migrations.RunPython.noop),
     ]

@@ -6,9 +6,11 @@ Business logic for checking achievements and calculating streaks.
 from datetime import timedelta
 from typing import List
 
-from django.db.models import F, FloatField
+from django.db.models import Avg, F, FloatField
 from django.db.models.functions import Cast
 from django.utils import timezone
+
+from apps.eras.models import Era
 
 from .models import Achievement, UserAchievement, UserProgress
 
@@ -50,20 +52,28 @@ def _check_achievement_criteria(user, achievement: Achievement) -> bool:
     from apps.quiz.models import Quiz
 
     slug = achievement.slug
+    total_eras = Era.objects.count()
 
     # Exploration achievements
     if slug == "first-visit":
         return UserProgress.objects.filter(user=user, era_visited=True).exists()
 
     elif slug == "all-eras-visited":
-        return UserProgress.objects.filter(user=user, era_visited=True).count() == 6
+        return (
+            total_eras > 0
+            and UserProgress.objects.filter(user=user, era_visited=True).count() >= total_eras
+        )
 
     # Chat achievements
     elif slug == "first-chat":
         return ChatSession.objects.filter(user=user).exists()
 
     elif slug == "chat-all-eras":
-        return UserProgress.objects.filter(user=user, chat_sessions_count__gt=0).count() == 6
+        return (
+            total_eras > 0
+            and UserProgress.objects.filter(user=user, chat_sessions_count__gt=0).count()
+            >= total_eras
+        )
 
     elif slug == "chat-enthusiast":
         return ChatSession.objects.filter(user=user).count() >= 10
@@ -73,35 +83,37 @@ def _check_achievement_criteria(user, achievement: Achievement) -> bool:
         return Quiz.objects.filter(user=user, completed_at__isnull=False).exists()
 
     elif slug == "quiz-all-eras":
-        return UserProgress.objects.filter(user=user, quizzes_passed__gt=0).count() == 6
+        return (
+            total_eras > 0
+            and UserProgress.objects.filter(user=user, quizzes_passed__gt=0).count()
+            >= total_eras
+        )
 
     elif slug == "perfect-score":
         # Filter where score == total_questions (100%)
         return Quiz.objects.filter(
             user=user,
             completed_at__isnull=False,
-            score=F("total_questions")
+            score=F("total_questions"),
         ).exists()
 
     elif slug == "quiz-master":
         return Quiz.objects.filter(user=user, completed_at__isnull=False).count() >= 20
 
     elif slug == "high-achiever":
-        # Average score >= 85% across all completed quizzes
-        completed = Quiz.objects.filter(user=user, completed_at__isnull=False)
-        if not completed.exists():
-            return False
-        # Compute percentage from score/total_questions for each quiz
-        total_percentage = 0
-        count = 0
-        for quiz in completed:
-            if quiz.total_questions > 0:
-                total_percentage += (quiz.score / quiz.total_questions) * 100
-                count += 1
-        if count == 0:
-            return False
-        avg_score = total_percentage / count
-        return avg_score >= 85
+        # Average score >= 85% across all completed quizzes (DB aggregation)
+        result = Quiz.objects.filter(
+            user=user,
+            completed_at__isnull=False,
+            total_questions__gt=0,
+        ).aggregate(
+            avg=Avg(
+                Cast(F("score"), FloatField()) * 100.0
+                / Cast(F("total_questions"), FloatField())
+            )
+        )
+        avg_score = result["avg"]
+        return avg_score is not None and avg_score >= 85
 
     # Streak achievements
     elif slug == "three-day-streak":
@@ -115,11 +127,13 @@ def _check_achievement_criteria(user, achievement: Achievement) -> bool:
     # Mastery achievements
     elif slug == "complete-beginner":
         # Visited all eras + chatted about all eras + passed quiz in all eras
+        if total_eras == 0:
+            return False
         progress = UserProgress.objects.filter(user=user)
         return (
-            progress.filter(era_visited=True).count() == 6 and
-            progress.filter(chat_sessions_count__gt=0).count() == 6 and
-            progress.filter(quizzes_passed__gt=0).count() == 6
+            progress.filter(era_visited=True).count() >= total_eras
+            and progress.filter(chat_sessions_count__gt=0).count() >= total_eras
+            and progress.filter(quizzes_passed__gt=0).count() >= total_eras
         )
 
     return False
@@ -129,46 +143,37 @@ def calculate_activity_streak(user) -> int:
     """Calculate current activity streak (consecutive days with activity).
 
     Activity includes: chat session created, quiz completed, or era visited.
+    Fetches all activity dates in 3 queries, then computes streak in Python.
     """
     from apps.chat.models import ChatSession
     from apps.quiz.models import Quiz
 
+    # Gather all unique activity dates in 3 queries
+    chat_dates = set(
+        ChatSession.objects.filter(user=user).values_list("created_at__date", flat=True)
+    )
+    quiz_dates = set(
+        Quiz.objects.filter(user=user, completed_at__isnull=False).values_list(
+            "completed_at__date", flat=True
+        )
+    )
+    visit_dates = set(
+        UserProgress.objects.filter(
+            user=user, first_visited_at__isnull=False
+        ).values_list("first_visited_at__date", flat=True)
+    )
+    all_dates = chat_dates | quiz_dates | visit_dates
+
+    if not all_dates:
+        return 0
+
     today = timezone.now().date()
-    current_date = today
     streak = 0
+    current_date = today
 
-    while True:
-        # Check if user had any activity on current_date
-        had_activity = False
-
-        # Check chat sessions
-        if ChatSession.objects.filter(
-            user=user,
-            created_at__date=current_date,
-        ).exists():
-            had_activity = True
-
-        # Check quizzes
-        if not had_activity and Quiz.objects.filter(
-            user=user,
-            completed_at__date=current_date,
-        ).exists():
-            had_activity = True
-
-        # Check era visits
-        if not had_activity and UserProgress.objects.filter(
-            user=user,
-            first_visited_at__date=current_date,
-        ).exists():
-            had_activity = True
-
-        if had_activity:
-            streak += 1
-            current_date -= timedelta(days=1)
-        else:
-            break
-
-        # Safety: max 365 days lookback
+    while current_date in all_dates:
+        streak += 1
+        current_date -= timedelta(days=1)
         if streak > 365:
             break
 

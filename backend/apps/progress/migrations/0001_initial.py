@@ -69,10 +69,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='userprogress',
-            index=models.Index(fields=['user', 'era'], name='progress_us_user_id_3a4b5c_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='userprogress',
             index=models.Index(fields=['user', 'updated_at'], name='progress_us_user_id_6d7e8f_idx'),
         ),
         migrations.AddConstraint(

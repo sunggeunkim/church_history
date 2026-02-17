@@ -31,7 +31,16 @@ def update_chat_progress(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Quiz)
 def update_quiz_progress(sender, instance, created, **kwargs):
     """Update UserProgress when a quiz is completed."""
-    if instance.completed_at and instance.era:
+    if not instance.completed_at or not instance.era:
+        return
+
+    # Only process when quiz is first created with completed_at, or completed_at was just set
+    if not created:
+        update_fields = kwargs.get("update_fields")
+        if update_fields and "completed_at" not in update_fields:
+            return
+
+    if True:
         progress, _ = UserProgress.objects.get_or_create(
             user=instance.user,
             era=instance.era,

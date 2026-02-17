@@ -77,10 +77,14 @@ class UserProgress(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = [["user", "era"]]
         ordering = ["era__order"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "era"],
+                name="progress_userprogress_user_era_uniq",
+            ),
+        ]
         indexes = [
-            models.Index(fields=["user", "era"]),
             models.Index(fields=["user", "updated_at"]),
         ]
 
@@ -164,8 +168,13 @@ class UserAchievement(models.Model):
     unlocked_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = [["user", "achievement"]]
         ordering = ["-unlocked_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "achievement"],
+                name="progress_userachievement_user_achievement_uniq",
+            ),
+        ]
         indexes = [
             models.Index(fields=["user", "-unlocked_at"]),
         ]

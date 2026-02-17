@@ -21,7 +21,7 @@ export function CanvasPage() {
     setExpandedEra,
   } = useEraStore();
 
-  const { markEraVisited } = useProgressStore();
+  const { markEraVisited, summary } = useProgressStore();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [selectedEra, setSelectedEra] = useState<Era | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
@@ -45,11 +45,15 @@ export function CanvasPage() {
     }
   }, [searchParams, timelineData, setExpandedEra, isDesktop]);
 
+  const isEraVisited = (eraId: number) =>
+    summary?.byEra?.some((e) => e.eraId === eraId && e.eraVisited) ?? false;
+
   const handleEraOverviewClick = (era: Era) => {
     setExpandedEra(era.id);
     setSelectedEra(era);
-    // Mark era as visited
-    markEraVisited(era.id);
+    if (!isEraVisited(era.id)) {
+      markEraVisited(era.id);
+    }
     // Scroll to the era block
     const element = document.getElementById(`era-block-${era.id}`);
     element?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -114,8 +118,9 @@ export function CanvasPage() {
               const era = eras.find((e) => e.id === eraId);
               if (era) {
                 setSelectedEra(era);
-                // Mark era as visited when expanded
-                markEraVisited(era.id);
+                if (!isEraVisited(era.id)) {
+                  markEraVisited(era.id);
+                }
               }
             }}
             onChatClick={handleChatClick}
