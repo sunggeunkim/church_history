@@ -148,6 +148,8 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "chat": "30/hour",
         "chat_burst": "5/minute",
+        "quiz": "20/hour",
+        "quiz_burst": "3/minute",
     },
 }
 

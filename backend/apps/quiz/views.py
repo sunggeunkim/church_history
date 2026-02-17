@@ -6,10 +6,13 @@ completing quizzes, and viewing quiz statistics.
 
 import logging
 
-from django.db.models import Avg, Count, Q
+from django.db import transaction
+from django.db.models import Avg, Count, F, FloatField
+from django.db.models.functions import Cast
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -22,6 +25,7 @@ from .serializers import (
     QuizSerializer,
 )
 from .services import generate_quiz_questions, grade_short_answer
+from .throttles import QuizBurstThrottle, QuizRateThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +46,12 @@ class QuizViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post"]
+
+    def get_throttles(self):
+        """Apply rate limiting only to quiz creation."""
+        if self.action == "create":
+            return [QuizBurstThrottle(), QuizRateThrottle()]
+        return []
 
     def get_serializer_class(self):
         """Return appropriate serializer based on action."""
@@ -71,16 +81,15 @@ class QuizViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create quiz and generate questions via OpenAI."""
-        quiz = serializer.save(user=self.request.user)
-
-        # Generate questions (this calls OpenAI)
         try:
-            generate_quiz_questions(quiz)
+            with transaction.atomic():
+                quiz = serializer.save(user=self.request.user)
+                generate_quiz_questions(quiz)
         except Exception as e:
             logger.exception("Failed to generate quiz questions: %s", e)
-            # Clean up the quiz if question generation fails
-            quiz.delete()
-            raise
+            raise ValidationError(
+                {"detail": "Failed to generate quiz questions. Please try again."}
+            )
 
     @action(detail=True, methods=["post"])
     def submit_answer(self, request, pk=None):
@@ -181,21 +190,25 @@ class QuizStatsView(GenericAPIView):
         total_quizzes = Quiz.objects.filter(user=user).count()
         total_completed = completed_quizzes.count()
 
-        # Calculate average score
+        # Calculate average percentage score
         avg_score = (
             completed_quizzes.aggregate(
-                avg=Avg("score", default=0) / Avg("total_questions", default=1) * 100
+                avg=Avg(
+                    Cast(F("score"), FloatField())
+                    * 100.0
+                    / Cast(F("total_questions"), FloatField())
+                )
             )["avg"]
-            or 0
+            or 0.0
         )
 
         # Count quizzes passed (>=70%)
         quizzes_passed = sum(1 for q in completed_quizzes if q.passed)
 
-        # Calculate current streak (consecutive completed quizzes from most recent)
+        # Calculate current streak (consecutive passed quizzes from most recent)
         current_streak = 0
         for quiz in completed_quizzes.order_by("-completed_at"):
-            if quiz.is_completed:
+            if quiz.passed:
                 current_streak += 1
             else:
                 break
@@ -206,7 +219,11 @@ class QuizStatsView(GenericAPIView):
             completed_quizzes.values("era__id", "era__name")
             .annotate(
                 quizzes_completed=Count("id"),
-                avg_score=Avg("score") / Avg("total_questions") * 100,
+                avg_score=Avg(
+                    Cast(F("score"), FloatField())
+                    * 100.0
+                    / Cast(F("total_questions"), FloatField())
+                ),
             )
             .order_by("era__id")
         )
@@ -217,7 +234,7 @@ class QuizStatsView(GenericAPIView):
                     "era_id": stat["era__id"],
                     "era_name": stat["era__name"] or "All Eras",
                     "quizzes_completed": stat["quizzes_completed"],
-                    "average_score": round(stat["avg_score"], 1),
+                    "average_score": round(stat["avg_score"] or 0, 1),
                 }
             )
 
