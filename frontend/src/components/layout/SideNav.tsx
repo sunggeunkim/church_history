@@ -6,6 +6,7 @@ import {
   HelpCircle,
   BarChart3,
   Settings,
+  Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ type SideNavProps = {
 const navItems = [
   { to: "/", icon: Home, label: "Home" },
   { to: "/eras", icon: Clock, label: "Eras" },
+  { to: "/canvas", icon: Map, label: "Canvas" },
   { to: "/chat", icon: MessageSquare, label: "Chat" },
   { to: "/quiz", icon: HelpCircle, label: "Quiz" },
   { to: "/progress", icon: BarChart3, label: "Progress" },

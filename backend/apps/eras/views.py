@@ -1,5 +1,7 @@
 """Views for eras API."""
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -30,11 +32,13 @@ class EraViewSet(viewsets.ReadOnlyModelViewSet):
             return EraDetailSerializer
         return EraListSerializer
 
+    @method_decorator(cache_page(60 * 15))
     @action(detail=False, methods=["get"])
     def timeline(self, request):
         """Get all eras with their events for timeline visualization.
 
         Returns eras ordered by start year with key events included.
+        Cached for 15 minutes since era data changes infrequently.
         """
         eras = self.get_queryset()
         serializer = EraDetailSerializer(eras, many=True)

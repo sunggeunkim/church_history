@@ -149,4 +149,9 @@ export async function fetchEra(slug: string): Promise<Era> {
   return mapEra(response.data);
 }
 
+export async function fetchTimeline(): Promise<Era[]> {
+  const response = await api.get("/eras/timeline/");
+  return response.data.map(mapEra);
+}
+
 export default api;
