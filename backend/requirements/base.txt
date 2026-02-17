@@ -1,0 +1,22 @@
+# Django core
+Django==5.2
+djangorestframework==3.15.2
+django-cors-headers==4.6.0
+python-decouple==3.8
+
+# Authentication
+django-allauth==65.4.1
+dj-rest-auth==7.0.0
+djangorestframework-simplejwt==5.4.0
+requests==2.32.5
+
+# Database
+psycopg2-binary==2.9.10
+pgvector==0.3.6
+
+# Task queue
+celery==5.4.0
+redis==5.2.1  # BSD-3-Clause Python client; server uses Valkey (BSD-3-Clause)
+
+# Production server
+gunicorn==23.0.0
