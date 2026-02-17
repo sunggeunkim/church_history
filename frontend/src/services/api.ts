@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { User } from "@/types";
+import type { User, Era, KeyEvent, KeyFigure } from "@/types";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
@@ -101,5 +101,52 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+// Era API functions
+function mapKeyEvent(data: any): KeyEvent {
+  return {
+    id: data.id,
+    year: data.year,
+    title: data.title,
+    description: data.description,
+  };
+}
+
+function mapKeyFigure(data: any): KeyFigure {
+  return {
+    id: data.id,
+    name: data.name,
+    birthYear: data.birth_year,
+    deathYear: data.death_year,
+    title: data.title,
+    description: data.description,
+  };
+}
+
+function mapEra(data: any): Era {
+  return {
+    id: data.id,
+    name: data.name,
+    slug: data.slug,
+    startYear: data.start_year,
+    endYear: data.end_year,
+    description: data.description,
+    summary: data.summary,
+    color: data.color,
+    order: data.order,
+    keyEvents: data.key_events?.map(mapKeyEvent),
+    keyFigures: data.key_figures?.map(mapKeyFigure),
+  };
+}
+
+export async function fetchEras(): Promise<Era[]> {
+  const response = await api.get("/eras/");
+  return response.data.results.map(mapEra);
+}
+
+export async function fetchEra(slug: string): Promise<Era> {
+  const response = await api.get(`/eras/${slug}/`);
+  return mapEra(response.data);
+}
 
 export default api;

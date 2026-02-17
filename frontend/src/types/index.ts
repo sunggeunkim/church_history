@@ -7,13 +7,33 @@ export type User = {
 };
 
 export type Era = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   startYear: number;
   endYear: number | null;
   description: string;
+  summary: string;
   color: string;
+  order: number;
+  keyEvents?: KeyEvent[];
+  keyFigures?: KeyFigure[];
+};
+
+export type KeyEvent = {
+  id: number;
+  year: number;
+  title: string;
+  description: string;
+};
+
+export type KeyFigure = {
+  id: number;
+  name: string;
+  birthYear: number | null;
+  deathYear: number | null;
+  title: string;
+  description: string;
 };
 
 export type ChatMessage = {
