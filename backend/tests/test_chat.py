@@ -426,7 +426,7 @@ class TestChatSessionSerializer:
         assert "message_count" in data
 
     def test_session_serializer_message_count(self, chat_session):
-        """Test message_count computed field."""
+        """Test message_count annotated field."""
         ChatMessage.objects.create(
             session=chat_session,
             role=ChatMessage.Role.USER,
@@ -438,11 +438,16 @@ class TestChatSessionSerializer:
             content="Hi there",
         )
 
-        serializer = ChatSessionSerializer(chat_session)
+        from django.db.models import Count
+
+        annotated = ChatSession.objects.annotate(
+            message_count=Count("messages")
+        ).get(pk=chat_session.pk)
+        serializer = ChatSessionSerializer(annotated)
         assert serializer.data["message_count"] == 2
 
     def test_session_serializer_zero_messages(self, chat_session):
-        """Test message_count is 0 for empty session."""
+        """Test message_count defaults to 0 for unannotated instance."""
         serializer = ChatSessionSerializer(chat_session)
         assert serializer.data["message_count"] == 0
 

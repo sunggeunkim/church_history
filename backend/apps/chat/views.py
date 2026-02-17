@@ -7,6 +7,7 @@ async SSE streaming endpoint for real-time AI chat responses.
 import json
 import logging
 
+from django.db.models import Count
 from django.http import StreamingHttpResponse
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
@@ -53,7 +54,7 @@ class ChatSessionViewSet(viewsets.ModelViewSet):
         return (
             ChatSession.objects.filter(user=self.request.user)
             .select_related("era")
-            .prefetch_related("messages")
+            .annotate(message_count=Count("messages"))
         )
 
     def perform_create(self, serializer):
@@ -92,7 +93,7 @@ class ChatMessageListView(ListAPIView):
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def chat_stream(request):
-    """Async SSE streaming endpoint for AI chat responses.
+    """SSE streaming endpoint for AI chat responses.
 
     POST /api/chat/stream/
     Body:
@@ -107,6 +108,12 @@ def chat_stream(request):
     - data: {"type": "error", "content": "..."} on failure
 
     Rate limited to 30 messages/hour and 5 messages/minute per user.
+
+    Note: This endpoint requires ASGI (uvicorn) to properly handle the async
+    streaming generator. Under WSGI, Django runs sync views in a thread pool
+    and the async generator in StreamingHttpResponse is consumed by the ASGI
+    handler. The sync ORM calls in this view function run safely before the
+    streaming response is returned.
     """
     # Validate request data
     serializer = ChatStreamSerializer(data=request.data)

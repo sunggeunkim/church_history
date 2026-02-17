@@ -48,9 +48,9 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSessionSerializer(serializers.ModelSerializer):
-    """Serializer for ChatSession model with computed message count."""
+    """Serializer for ChatSession model with annotated message count."""
 
-    message_count = serializers.SerializerMethodField()
+    message_count = serializers.IntegerField(read_only=True, default=0)
     era_name = serializers.CharField(source="era.name", read_only=True, default=None)
 
     class Meta:
@@ -74,10 +74,6 @@ class ChatSessionSerializer(serializers.ModelSerializer):
             "total_input_tokens",
             "total_output_tokens",
         ]
-
-    def get_message_count(self, obj):
-        """Return the number of messages in this session."""
-        return obj.messages.count()
 
 
 class ChatSessionCreateSerializer(serializers.ModelSerializer):

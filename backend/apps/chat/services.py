@@ -283,7 +283,7 @@ async def stream_chat_response(session, user_message_text, era=None):
             {
                 "title": c["title"],
                 "url": c.get("url", ""),
-                "source": c.get("source_name", ""),
+                "source_name": c.get("source_name", ""),
             }
             for c in citations
         ],
@@ -295,7 +295,7 @@ def extract_citations(response_text, chunks):
 
     Matches retrieved chunks against the response to determine which
     sources were actually referenced, either by title mention or
-    by [Source: ...] notation.
+    by [Source: title] notation matching the specific source title.
 
     Args:
         response_text: The full AI-generated response text.
@@ -304,18 +304,30 @@ def extract_citations(response_text, chunks):
     Returns:
         A list of dicts with keys: content_item, title, url, source_name.
     """
+    import re
+
     citations = []
     seen_items = set()
     response_lower = response_text.lower()
+
+    # Extract all [Source: ...] references from the response
+    source_refs = [
+        ref.strip().lower()
+        for ref in re.findall(r"\[source:\s*([^\]]+)\]", response_lower)
+    ]
 
     for chunk in chunks:
         item = chunk.content_item
         if item.id not in seen_items:
             seen_items.add(item.id)
-            # Check if this source is referenced in the response
-            title_referenced = item.title.lower() in response_lower
-            source_notation_used = "[source:" in response_lower
-            if title_referenced or source_notation_used:
+            title_lower = item.title.lower()
+            # Check if this specific source is referenced
+            title_referenced = title_lower in response_lower
+            source_notation_match = any(
+                title_lower in ref or ref in title_lower
+                for ref in source_refs
+            )
+            if title_referenced or source_notation_match:
                 citations.append(
                     {
                         "content_item": item,
