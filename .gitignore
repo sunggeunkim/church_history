@@ -1,0 +1,80 @@
+# Environment & Secrets (NEVER commit these)
+.env
+.env.local
+.env.production
+.env.staging
+*.pem
+*.key
+*.cert
+credentials.json
+client_secret*.json
+service-account*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+celerybeat-schedule
+celerybeat.pid
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/build/
+*.tsbuildinfo
+.eslintcache
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static_collected/
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+*.bak
+*.tmp
+*.temp
